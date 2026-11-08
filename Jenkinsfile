@@ -1,44 +1,33 @@
-pipeline {
-    agent any
+post {
+    success {
+        echo 'SUCCESS: All Python tests passed!'
 
-    triggers {
-        githubPush()
+        withCredentials([
+            string(credentialsId: 'webex-bot-token',
+                   variable: 'WEBEX_TOKEN'),
+            string(credentialsId: 'webex-room-id',
+                   variable: 'WEBEX_ROOM_ID')
+        ]) {
+            sh '''
+                set +x
+                python3 webex_notify.py SUCCESS
+            '''
+        }
     }
 
-    stages {
+    failure {
+        echo 'FAILURE: Jenkins build failed!'
 
-        stage('Checkout') {
-            steps {
-                echo 'Checking out GitHub project'
-            }
-        }
-
-        stage('Python Version') {
-            steps {
-                sh 'python3 --version'
-            }
-        }
-
-        stage('Run Unit Tests') {
-            steps {
-                echo 'Running Python unit tests'
-                sh 'python3 -m unittest -v'
-            }
-        }
-
-    }
-
-    post {
-        success {
-            echo 'SUCCESS: All Python tests passed!'
-        }
-
-        failure {
-            echo 'FAILURE: Python tests did not pass!'
-        }
-
-        always {
-            echo 'Jenkins pipeline finished.'
+        withCredentials([
+            string(credentialsId: 'webex-bot-token',
+                   variable: 'WEBEX_TOKEN'),
+            string(credentialsId: 'webex-room-id',
+                   variable: 'WEBEX_ROOM_ID')
+        ]) {
+            sh '''
+                set +x
+                python3 webex_notify.py FAILURE
+            '''
         }
     }
 }
