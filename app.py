@@ -1,5 +1,5 @@
 # Testing automatic Jenkins GitHub webhook
-#change the python
+#change python code
 def add_numbers(a, b):
     return a + b
 
